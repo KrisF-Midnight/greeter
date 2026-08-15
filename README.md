@@ -1,0 +1,14 @@
+# greeter
+
+A small service that rides the paved road.
+
+It exists to prove the road works: a change here flows through the shared pipeline, past the
+gates, into the cluster, and gets verified once it is running. The service itself is
+deliberately unremarkable — the interesting part is everything that happens to a commit.
+
+The platform lives in [tarmac](https://github.com/KrisF-Midnight/tarmac). This repository
+consumes it by version rather than copying it.
+
+## Status
+
+Early — the service lands next.
