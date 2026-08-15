@@ -1,0 +1,14 @@
+# Keep the build context small and keep host-only artefacts out of the image.
+# node_modules especially: the deps stage installs them for the target
+# platform, and copying a macOS-resolved tree over that would be silently wrong.
+node_modules
+.git
+.github
+dist
+out
+coverage
+test
+*.log
+.DS_Store
+.env*
+README.md
