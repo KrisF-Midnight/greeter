@@ -1,0 +1,25 @@
+# This is the whole of this application's CI.
+#
+# The gates, their severities, the image build and the publish are all defined
+# and versioned by the platform. Changing what this repository is checked
+# against is a change to tarmac, reviewed there — not a change anyone makes here
+# in passing.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    # The ref must match `platform-ref` below. GitHub does not expose the ref a
+    # reusable workflow was called at, so the platform cannot infer it.
+    uses: KrisF-Midnight/tarmac/.github/workflows/ci.yml@v1
+    with:
+      platform-ref: v1
