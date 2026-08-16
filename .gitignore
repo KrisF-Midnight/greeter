@@ -32,3 +32,14 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Terraform. .terraform.lock.hcl is deliberately NOT ignored — the provider
+# lock file is what makes a plan reproducible and belongs in git. Everything
+# below is either a local cache, a credential-bearing artefact, or state that
+# lives in the backend rather than here.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+plan.json
+crash.log

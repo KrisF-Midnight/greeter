@@ -1,5 +1,5 @@
 import index from "./index.html";
-import { EnvGreetingSource, type GreetingSource } from "./greeting";
+import { greetingSourceFrom, type GreetingSource } from "./greeting";
 
 export type ServerOptions = {
   port?: number;
@@ -18,7 +18,7 @@ export type ServerOptions = {
  * Probing the greeting source is exactly what belongs here.
  */
 export function createServer(opts: ServerOptions = {}) {
-  const source = opts.source ?? new EnvGreetingSource();
+  const source = opts.source ?? greetingSourceFrom();
 
   return Bun.serve({
     port: opts.port ?? Number(Bun.env.PORT ?? 3000),
