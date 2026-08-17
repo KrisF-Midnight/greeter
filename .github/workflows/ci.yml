@@ -23,3 +23,9 @@ jobs:
     uses: KrisF-Midnight/tarmac/.github/workflows/ci.yml@v1
     with:
       platform-ref: v1
+    # Named one by one rather than `secrets: inherit`. Inheriting hands the
+    # called workflow every secret this repository holds, forever, including
+    # ones added later for unrelated reasons; this list is auditable from here.
+    secrets:
+      PLATFORM_APP_ID: ${{ secrets.PLATFORM_APP_ID }}
+      PLATFORM_APP_PRIVATE_KEY: ${{ secrets.PLATFORM_APP_PRIVATE_KEY }}
