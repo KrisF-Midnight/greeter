@@ -12,7 +12,13 @@
  * readiness has something real to probe.
  */
 
-export const DEFAULT_GREETING = "Hello from the paved road";
+/**
+ * The compiled-in fallback. It says so out loud on purpose: if this text is
+ * what reaches the browser, the greeting did not come from S3, and the point
+ * of the service is that you can tell the difference without reading logs.
+ * Keep it distinct from whatever the Terraform writes to the bucket.
+ */
+export const DEFAULT_GREETING = "Hello from the paved road (built-in default)";
 
 /** The object key the platform's Terraform writes the greeting to. */
 export const GREETING_KEY = "greeting";
@@ -23,9 +29,9 @@ export type GreetingSource = {
 };
 
 /**
- * Normalise what a source returned. An empty or whitespace-only value is a
- * misconfiguration, not an intent to render a blank page — a config map with a
- * stray newline is the usual cause.
+ * Normalise what the environment supplied. An empty or whitespace-only value
+ * is a misconfiguration, not an intent to render a blank page — a config map
+ * with a stray newline is the usual cause.
  */
 function orDefault(value: string | undefined): string {
   const trimmed = value?.trim();
@@ -53,11 +59,11 @@ export type ObjectStore = {
 /**
  * Which endpoint the object store lives behind, or undefined for real AWS.
  *
- * Bun's S3 client reads credentials and region from the standard AWS variables
- * but looks for the endpoint under `S3_ENDPOINT`/`AWS_ENDPOINT` rather than the
- * SDK's `AWS_ENDPOINT_URL_S3`. Resolving it here keeps the deployment contract
- * on the variable the AWS SDKs and Terraform already agree on, and confines
- * the difference to one function.
+ * Bun's S3 client reads credentials and region from the standard AWS variables.
+ * The endpoint is resolved here instead: `AWS_ENDPOINT_URL_S3` first, then the
+ * general `AWS_ENDPOINT_URL`. That keeps the deployment contract on the
+ * variables the AWS SDKs and Terraform already agree on, and confines the
+ * choice to one function.
  *
  * Worth the trouble because of how it fails otherwise: an unset endpoint is not
  * an error, it is a client that quietly talks to real AWS. That was the actual
@@ -77,8 +83,9 @@ export function s3Store(
 ): ObjectStore {
   // Region and credentials come from the environment, exactly as the Terraform
   // takes them, so the same image runs against the local stand-in and against
-  // a real account with no code path between them. In a cluster the
-  // credentials arrive from the workload's identity rather than from here.
+  // a real account with no code path between them. Workload identity is not an
+  // alternative as-is: this client has no AssumeRoleWithWebIdentity support, so
+  // a projected service-account token would not authenticate it.
   const endpoint = endpointFrom(env);
   const client = new Bun.S3Client({ bucket, ...(endpoint ? { endpoint } : {}) });
   return { text: (key) => client.file(key).text() };
@@ -91,11 +98,16 @@ export class S3GreetingSource implements GreetingSource {
   ) {}
 
   async get(): Promise<string> {
-    // Deliberately not caught. A missing bucket or object means the
-    // infrastructure this service depends on is not there, and the honest
+    // Deliberately not caught, and an empty object counts as a failure too. A
+    // missing bucket, a missing object and an empty one all mean the
+    // infrastructure this service depends on did not deliver, and the honest
     // answer to that is a failed readiness probe — not a default greeting that
     // makes a broken deployment look healthy.
-    return orDefault(await this.store.text(this.key));
+    const value = (await this.store.text(this.key)).trim();
+    if (value.length === 0) {
+      throw new Error(`object ${this.key} is empty`);
+    }
+    return value;
   }
 }
 

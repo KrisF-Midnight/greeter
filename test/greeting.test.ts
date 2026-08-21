@@ -57,11 +57,14 @@ describe("S3GreetingSource", () => {
     expect(requested).toBe(GREETING_KEY);
   });
 
+  // An empty object is a missing object that happens to exist: the greeting the
+  // Terraform should have written is not there, so defaulting would report a
+  // broken deployment as ready.
   test.each([["", "empty"], ["  \n ", "whitespace"]])(
-    "falls back when the object is %p (%s)",
+    "rejects when the object is %p (%s)",
     async (value) => {
       const source = new S3GreetingSource(storeReturning(value));
-      expect(await source.get()).toBe(DEFAULT_GREETING);
+      await expect(source.get()).rejects.toThrow(/is empty/);
     },
   );
 
@@ -75,7 +78,7 @@ describe("S3GreetingSource", () => {
       },
     });
 
-    expect(source.get()).rejects.toThrow("NoSuchBucket");
+    await expect(source.get()).rejects.toThrow("NoSuchBucket");
   });
 });
 

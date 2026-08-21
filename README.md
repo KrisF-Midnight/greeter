@@ -7,8 +7,5 @@ gates, into the cluster, and gets verified once it is running. The service itsel
 deliberately unremarkable — the interesting part is everything that happens to a commit.
 
 The platform lives in [tarmac](https://github.com/KrisF-Midnight/tarmac). This repository
-consumes it by version rather than copying it.
-
-## Status
-
-Early — the service lands next.
+consumes it rather than copying it: the pipeline pinned to a version, the Terraform module
+still by path until the platform is published.
