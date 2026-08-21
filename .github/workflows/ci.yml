@@ -20,9 +20,9 @@ jobs:
   ci:
     # The ref must match `platform-ref` below. GitHub does not expose the ref a
     # reusable workflow was called at, so the platform cannot infer it.
-    uses: KrisF-Midnight/tarmac/.github/workflows/ci.yml@v1
+    uses: KrisF-Midnight/tarmac/.github/workflows/ci.yml@v2
     with:
-      platform-ref: v1
+      platform-ref: v2
     # Named one by one rather than `secrets: inherit`. Inheriting hands the
     # called workflow every secret this repository holds, forever, including
     # ones added later for unrelated reasons; this list is auditable from here.
