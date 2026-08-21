@@ -1,7 +1,10 @@
 # Keep the build context small and keep host-only artefacts out of the image.
 # node_modules especially: the deps stage installs them for the target
 # platform, and copying a macOS-resolved tree over that would be silently wrong.
+# infra likewise: nothing in the image comes from it, and .terraform under it is
+# a few hundred megabytes of provider binaries plus local state.
 node_modules
+infra
 .git
 .github
 dist
