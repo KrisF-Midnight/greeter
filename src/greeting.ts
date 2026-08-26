@@ -18,7 +18,7 @@
  * of the service is that you can tell the difference without reading logs.
  * Keep it distinct from whatever the Terraform writes to the bucket.
  */
-export const DEFAULT_GREETING = "Hello from the paved road (built-in default)";
+export const DEFAULT_GREETING = "Hello from the paved road (no S3 configured, using built-in default)";
 
 /** The object key the platform's Terraform writes the greeting to. */
 export const GREETING_KEY = "greeting";
