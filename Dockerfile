@@ -2,7 +2,7 @@
 # the contents of a "reproducible" build drift; the digest is the only thing
 # that actually identifies what was built. The tag is kept alongside it purely
 # so a human can tell which version this is.
-ARG BUN_IMAGE=oven/bun:1.3.14-alpine@sha256:5acc90a93e91ff07bf72aa90a7c9f0fa189765aec90b47bdbf2152d2196383c0
+ARG BUN_IMAGE=oven/bun:1.3.14-alpine
 
 # --- dependencies -----------------------------------------------------------
 # Split into its own stage so that changing application code does not reinstall
